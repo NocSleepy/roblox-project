@@ -1,9 +1,16 @@
+--[[
+    ALL OF THIS CODE WRITTEN BY Sleepy - me WITHOUT AI.
+    THATS A RESPECT!
+    THIS IS THE REASON THE CODE IS SO UGLY 😭
+]]--
+
 -- SERVICES AND VARIABLES --
 
 -- @ROBLOX
 local DSS: DataStoreService = game:GetService('DataStoreService')
 
---@CUSTOM
+-- @CUSTOM
+-- Custom service section empty for not it gonna get added soon.
 
 -- DATABASES
 local PlayerData = DSS:GetDataStore('PlayerData')
@@ -25,9 +32,11 @@ type self_t = {
 
     -- RULES
     CURRENT_ATTEMPTS: {[Player]: {ATTEMPT: number}},
-    MAX_ATTEMPT: number
+    MAX_ATTEMPT: number,
+    AUTO_DATA_UPDATE_DURATION: number
 }
 
+-- TABLES --
 local ProfileService: service_t = {}
 ProfileService.__index = ProfileService
 
@@ -40,7 +49,8 @@ function ProfileService.init_conf(): typeof(setmetatable({} :: self_t, ProfileSe
         CURRENT_ATTEMPTS = {},
 
         -- RULES
-        MAX_ATTEMPT = 3,
+        MAX_ATTEMPT = 5,
+        AUTO_DATA_UPDATE_DURATION = 300
     }
 
     return setmetatable(self, ProfileService)
@@ -83,6 +93,12 @@ function ProfileService:load_async(player)
             wait()
         until isGotProgressConfig
     end
+
+    -- first try to get the data
+
+    local succ, data = pcall(function()
+        return PlayerData:GetAsync(player.UserId)
+    end)
 end
 
 return ProfileService
