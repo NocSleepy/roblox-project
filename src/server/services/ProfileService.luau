@@ -1,5 +1,5 @@
 --[[
-    ALL OF THIS CODE WRITTEN BY Sleepy - me WITHOUT AI.
+    ALL OF THIS CODE WRITTEN BY Sleepy - Noctxy (same person btw) WITHOUT AI.
     THATS A RESPECT!
     THIS IS THE REASON THE CODE IS SO UGLY 😭
 ]]--
