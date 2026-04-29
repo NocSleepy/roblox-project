@@ -89,9 +89,7 @@ function ProfileService:load_async(player)
     local isGotProgressConfig = self.Sessions[player].progress:lower() == 'initialized player config'
 
     if not isGotProgressConfig then
-        repeat
-            wait()
-        until isGotProgressConfig
+        -- error management gonna be added here soon.
     end
 
     -- first try to get the data
