@@ -1,3 +1,68 @@
-local ProfileService = {}
+-- TYPE DEFINITIONS
+-- @GLOBAL TYPES
+export type service_t = {
+    init_conf: () -> typeof(setmetatable({} :: any, {})),
+    init_plr: (self: {}, player: Player) -> boolean?,
+    load_async: (player: Player) -> (boolean, {any}?)
+}
+
+
+-- @LOCAL TYPES
+type self_t = {
+    Sessions: {[Player]: {progress: string, loaded: boolean, backup_loaded: boolean} },
+    UpdateQueue: {[Player]: {InQueue: boolean, InProgress: boolean}},
+    SaveQueue: {[Player]: {InQueue: boolean, InProgress: boolean}},
+
+    -- RULES
+    CURRENT_ATTEMPTS: {[Player]: {ATTEMPT: number}},
+    MAX_ATTEMPT: number
+}
+
+local ProfileService: service_t = {}
+ProfileService.__index = ProfileService
+
+function ProfileService.init_conf(): typeof(setmetatable({} :: self_t, ProfileService))
+    local self: self_t = {
+        Sessions = {},
+        UpdateQueue = {},
+        SaveQueue = {},
+
+        -- RULES
+        CURRENT_ATTEMPTS = {},
+        MAX_ATTEMPT = 3,
+    }
+
+    return setmetatable(self, ProfileService)
+end
+
+function ProfileService.init_plr(self, player: Player)
+    if self.Sessions[player] == nil then
+        self.Sessions[player] = {
+            progress = "initialized player config",
+            loaded = false,
+            backup_loaded = false,
+        }
+    end
+
+    if self.SaveQueue[player] == nil then
+        self.SaveQueue[player] = {
+            InQueue = false,
+            InProgress = false
+        }
+    end
+
+    if self.UpdateQueue[player] == nil then
+        self.UpdateQueue[player] = {
+            InQueue = false,
+            InProgress = false
+        }
+    end
+
+    return true
+end
+
+function ProfileService:load_async(player)
+
+end
 
 return ProfileService
