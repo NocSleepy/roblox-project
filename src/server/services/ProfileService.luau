@@ -1,4 +1,14 @@
--- TYPE DEFINITIONS
+-- SERVICES AND VARIABLES --
+
+-- @ROBLOX
+local DSS: DataStoreService = game:GetService('DataStoreService')
+
+--@CUSTOM
+
+-- DATABASES
+local PlayerData = DSS:GetDataStore('PlayerData')
+
+-- TYPE DEFINITIONS --
 -- @GLOBAL TYPES
 export type service_t = {
     init_conf: () -> typeof(setmetatable({} :: any, {})),
@@ -26,9 +36,10 @@ function ProfileService.init_conf(): typeof(setmetatable({} :: self_t, ProfileSe
         Sessions = {},
         UpdateQueue = {},
         SaveQueue = {},
+        
+        CURRENT_ATTEMPTS = {},
 
         -- RULES
-        CURRENT_ATTEMPTS = {},
         MAX_ATTEMPT = 3,
     }
 
@@ -58,11 +69,20 @@ function ProfileService.init_plr(self, player: Player)
         }
     end
 
+    if self.CURRENT_ATTEMPTS[player] == nil then
+        self.CURRENT_ATTEMPTS[player] = { ATTEMPT = 0 }
+    end
     return true
 end
 
 function ProfileService:load_async(player)
+    local isGotProgressConfig = self.Sessions[player].progress:lower() == 'initialized player config'
 
+    if not isGotProgressConfig then
+        repeat
+            wait()
+        until isGotProgressConfig
+    end
 end
 
 return ProfileService
