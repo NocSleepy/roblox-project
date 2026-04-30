@@ -92,10 +92,20 @@ function ProfileService:load_async(player)
         -- error management gonna be added here soon.
     end
 
+    if self.CURRENT_ATTEMPTS[player].ATTEMPT >= self.MAX_ATTEMPT then
+        return function()
+            player:Kick(`THE ROBLOX DATA STORES MIGHT BE BROKEN BECAUSE THE DATA STORE FAILED TO LOAD PLEASE REJOIN TO TRY AGAIN IF THIS HAPPENS AGAIN CHECK THIS SITE: https://status.roblox.com THANKS FOR PLAYING OUR GAME HAVE A NICE DAY!`)
+        end
+    else
+        self.CURRENT_ATTEMPTS[player].ATTEMPT += 1
+    end
+
+    local plrKey = "player_"..player.UserId
+
     -- first try to get the data
 
     local succ, data = pcall(function()
-        return PlayerData:GetAsync(player.UserId)
+        return PlayerData:GetAsync(plrKey)
     end)
 end
 
