@@ -20,46 +20,46 @@ local PlayerData = DSS:GetDataStore('PlayerData')
 export type default_t = {
 	Level: number,
 	Token: number,
-	Gem: number,
+	Gem:   number,
 	
 	FirtTimeJoin: typeof(os.date()),
 	LastTimeJoin: typeof(os.date()),
 	
 	Settings: {
 		Sounds: {
-			MasterVolume: number,
-			MusicVolume: number,
-			SoundVolume: number
+			MasterVolume: 	number,
+			MusicVolume: 	number,
+			SoundVolume: 	number
 		},
 		
 		Graphics: {
-			ShadowOption: boolean,
+			ShadowOption: 	boolean,
 			VignetteOption: boolean
 		}
 	},
 	
 	Data: {
-		LastLoad: typeof(os.date()),
-		FirstUpdate: typeof(os.date()),
-		LastUpdate: typeof(os.date()),
+		LastLoad: 		typeof(os.date()),
+		
+		FirstUpdate: 	typeof(os.date())?,
+		LastUpdate: 	typeof(os.date())?,
 
-		LastBackupLoad: typeof(os.date()),
+		LastBackupLoad: typeof(os.date())?,
 
-		FirstBackupUpdate: typeof(os.date()),
-		LastBackupUpdate: typeof(os.date()),
+		FirstBackupUpdate: typeof(os.date())?,
+		LastBackupUpdate: typeof(os.date())?,
 		
 		CheatSuspencion: number
 	}
 }
 
 export type service_t = {
-    init_conf: () -> typeof(setmetatable({} :: any, {})),
-	init_plr: (self: {}, player: Player) -> boolean?,
+    init_conf:   () -> typeof(setmetatable({} :: any, {})),
+	init_plr:    (self: {}, player: Player) -> boolean?,
 	get_default: () -> default_t,
-	load_async: (player: Player) -> (boolean, {any}?),
+	load_async:  (player: Player) -> (boolean, {any}?),
 	fetch_async: (player: Player, data: {any}?) ->  boolean?
 }
-
 
 -- @LOCAL TYPES
 type self_t = {
@@ -79,9 +79,9 @@ ProfileService.__index = ProfileService
 
 function ProfileService.init_conf(): typeof(setmetatable({} :: self_t, ProfileService))
     local self: self_t = {
-        Sessions = {},
+        Sessions =    {},
         UpdateQueue = {},
-        SaveQueue = {},
+        SaveQueue =   {},
         
         CURRENT_ATTEMPTS = {},
 
@@ -122,7 +122,42 @@ function ProfileService.init_plr(self, player: Player)
     return true
 end
 
-
+function ProfileService:get_default()
+	return {
+		Level = 1,
+		Token = 0,
+		Gem = 0,
+		
+		FirtTimeJoin = os.date(),
+		LastTimeJoin = os.date(),
+		
+		Settings = {
+			Sounds = {
+				MasterVolume = 100,
+				MusicVolume  = 100,
+				SoundVolume  = 100
+			},
+			
+			Graphics = {
+				ShadowOption   = true,
+				VignetteOption = true
+			},
+		},
+		
+		Data = {
+			LastLoad       = os.date(),
+			
+			FirstUpdate    = nil,
+			LastUpdate     = nil,
+			
+			LastBackupLoad = nil,
+			
+			FirstBackupUpdate = nil,
+			LastBackupUpdate  = nil,
+			CheatSuspencion   = 0
+		}
+	} :: default_t
+end
 
 function ProfileService:load_async(player)
     local isGotProgressConfig = self.Sessions[player].progress:lower() == 'initialized player config'
@@ -155,6 +190,11 @@ function ProfileService:load_async(player)
 			self:fetch_async(player, default)
 		end
 	end
+end
+
+function ProfileService:fetch_async(player, data)
+	-- empty for now new things gonna be added here soon!
+	return true
 end
 
 return ProfileService
