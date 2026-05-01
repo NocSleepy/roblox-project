@@ -17,23 +17,60 @@ local PlayerData = DSS:GetDataStore('PlayerData')
 
 -- TYPE DEFINITIONS --
 -- @GLOBAL TYPES
+export type default_t = {
+	Level: number,
+	Token: number,
+	Gem: number,
+	
+	FirtTimeJoin: typeof(os.date()),
+	LastTimeJoin: typeof(os.date()),
+	
+	Settings: {
+		Sounds: {
+			MasterVolume: number,
+			MusicVolume: number,
+			SoundVolume: number
+		},
+		
+		Graphics: {
+			ShadowOption: boolean,
+			VignetteOption: boolean
+		}
+	},
+	
+	Data: {
+		LastLoad: typeof(os.date()),
+		FirstUpdate: typeof(os.date()),
+		LastUpdate: typeof(os.date()),
+
+		LastBackupLoad: typeof(os.date()),
+
+		FirstBackupUpdate: typeof(os.date()),
+		LastBackupUpdate: typeof(os.date()),
+		
+		CheatSuspencion: number
+	}
+}
+
 export type service_t = {
     init_conf: () -> typeof(setmetatable({} :: any, {})),
-    init_plr: (self: {}, player: Player) -> boolean?,
-    load_async: (player: Player) -> (boolean, {any}?)
+	init_plr: (self: {}, player: Player) -> boolean?,
+	get_default: () -> default_t,
+	load_async: (player: Player) -> (boolean, {any}?),
+	fetch_async: (player: Player, data: {any}?) ->  boolean?
 }
 
 
 -- @LOCAL TYPES
 type self_t = {
-    Sessions: {[Player]: {progress: string, loaded: boolean, backup_loaded: boolean} },
-    UpdateQueue: {[Player]: {InQueue: boolean, InProgress: boolean}},
-    SaveQueue: {[Player]: {InQueue: boolean, InProgress: boolean}},
+    Sessions:		{[Player]: {progress: string, loaded: boolean, backup_loaded: boolean} },
+    UpdateQueue:	{[Player]: {InQueue: boolean, InProgress: boolean}},
+    SaveQueue:		{[Player]: {InQueue: boolean, InProgress: boolean}},
 
     -- RULES
-    CURRENT_ATTEMPTS: {[Player]: {ATTEMPT: number}},
-    MAX_ATTEMPT: number,
-    AUTO_DATA_UPDATE_DURATION: number
+    CURRENT_ATTEMPTS: 			{[Player]: {ATTEMPT: number}},
+    MAX_ATTEMPT: 				number,
+    AUTO_DATA_UPDATE_DURATION:	number
 }
 
 -- TABLES --
@@ -85,6 +122,8 @@ function ProfileService.init_plr(self, player: Player)
     return true
 end
 
+
+
 function ProfileService:load_async(player)
     local isGotProgressConfig = self.Sessions[player].progress:lower() == 'initialized player config'
 
@@ -106,7 +145,16 @@ function ProfileService:load_async(player)
 
     local succ, data = pcall(function()
         return PlayerData:GetAsync(plrKey)
-    end)
+	end)
+	
+	if succ then
+		if data ~= nil then
+			self:fetch_async(player, data)
+		elseif data == nil then
+			local default = self:get_default()
+			self:fetch_async(player, default)
+		end
+	end
 end
 
 return ProfileService
