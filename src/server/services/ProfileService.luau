@@ -93,7 +93,7 @@ function ProfileService.init_conf(): typeof(setmetatable({} :: self_t, ProfileSe
     return setmetatable(self, ProfileService)
 end
 
-function ProfileService.init_plr(self, player: Player)
+function ProfileService:init_plr(player: Player)
     if self.Sessions[player] == nil then
         self.Sessions[player] = {
             progress = "initialized player config",
@@ -167,9 +167,8 @@ function ProfileService:load_async(player)
     end
 
     if self.CURRENT_ATTEMPTS[player].ATTEMPT >= self.MAX_ATTEMPT then
-        return function()
-            player:Kick(`THE ROBLOX DATA STORES MIGHT BE BROKEN BECAUSE THE DATA STORE FAILED TO LOAD PLEASE REJOIN TO TRY AGAIN IF THIS HAPPENS AGAIN CHECK THIS SITE: https://status.roblox.com THANKS FOR PLAYING OUR GAME HAVE A NICE DAY!`)
-        end
+		player:Kick(`THE ROBLOX DATA STORES MIGHT BE BROKEN BECAUSE THE DATA STORE FAILED TO LOAD PLEASE REJOIN TO TRY AGAIN IF THIS HAPPENS AGAIN CHECK THIS SITE: https://status.roblox.com THANKS FOR PLAYING OUR GAME HAVE A NICE DAY!`)
+		return false, nil
     else
         self.CURRENT_ATTEMPTS[player].ATTEMPT += 1
     end
@@ -184,17 +183,22 @@ function ProfileService:load_async(player)
 	
 	if succ then
 		if data ~= nil then
-			self:fetch_async(player, data)
+			return true, data
 		elseif data == nil then
 			local default = self:get_default()
-			self:fetch_async(player, default)
+			return true, default
 		end
+	else
+		--self:try_backup() -- gonna be added soon!
+		return false, nil
 	end
+	
+	return false, nil
 end
 
 function ProfileService:fetch_async(player, data)
 	-- empty for now new things gonna be added here soon!
-	return true
+	return nil
 end
 
 return ProfileService
