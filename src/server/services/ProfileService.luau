@@ -55,7 +55,7 @@ export type default_t = {
 
 export type service_t = {
     init_conf:   () -> typeof(setmetatable({} :: any, {})),
-	init_plr:    (self: {}, player: Player) -> boolean?,
+	init_plr:    (player: Player) -> boolean?,
 	get_default: () -> default_t,
 	load_async:  (player: Player) -> (boolean, {any}?),
 	fetch_async: (player: Player, data: {any}?) ->  boolean?
